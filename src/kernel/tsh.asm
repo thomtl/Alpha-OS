@@ -1,45 +1,83 @@
 [bits 16]
 
-tsh_start:
-    cli
-    clc
-    cld
+tsh_start: 
+    call clear_screen
+    mov si, TSH_WELCOME_MSG
+    call printf
+    call print_nl
 
     call tsh_loop
 
 
 
 tsh_loop:
+    mov al, '>'
+    call putch
     call read_string
+    push ax
     mov bx, ax
     mov al, byte [bx]
-    cmp al, 'S'
-    jne tsh_loop
-    mov si, STR_BUF
-    call printf
+
+    cmp al, 'e'
+    je tsh_loop_shutdown
+
+    jmp tsh_loop_unknown_command
+tsh_loop_ret:
     jmp tsh_loop
 
+tsh_loop_shutdown:
+    pop ax
+    call shutdown_apm
+    ; ?
+    jmp tsh_loop_ret
 
-
-
-
-STR_BUF: times 64 db 0;
+tsh_loop_unknown_command:
+    pop ax
+    mov si, TSH_UNRECONIZED_COMMAND
+    call printf
+    mov si, ax
+    call printf
+    call print_nl
+    jmp tsh_loop
 
 read_string:
-    xor ax, ax
-    mov bx, 0
-    add bx, STR_BUF
+    mov dx, 64
+    mov bx, STR_BUF + 64
+
+    read_clear:
+        mov byte [bx], 0x0
+        dec dx
+        dec bx
+        cmp dx, 0
+        je read_clear_done
+        jmp read_clear
+    read_clear_done:
+
+    mov dx, 0
     read_loop:
         xor ax, ax
         int 0x16
-        call putch
-        mov byte [bx], al
-        inc bx
-        cmp al, 0x13
+
+        cmp al, 0x0D
         je read_done
+
+        mov bx, STR_BUF
+        add bx, dx
+        inc dx
+        mov byte[bx], al
+        call putch
         jmp read_loop
     read_done:
+    call print_nl
+    mov dx, 64
+    mov bx, STR_BUF
+    add bx, dx
+    mov byte [bx], 0x0
     mov ax, STR_BUF
     ret
-        
 
+
+STR_BUF: times 65 db 0;
+
+TSH_WELCOME_MSG: db 'Welcome to TSH v0', 0x0
+TSH_UNRECONIZED_COMMAND: db 'Unreconized command: ', 0x0
