@@ -21,6 +21,12 @@ tsh_loop:
     cmp al, 'e'
     je tsh_loop_shutdown
 
+    cmp al, 'r'
+    je tsh_loop_reboot
+
+    cmp al, 's'
+    je tsh_loop_start_prg
+
     jmp tsh_loop_unknown_command
 tsh_loop_ret:
     jmp tsh_loop
@@ -28,6 +34,12 @@ tsh_loop_ret:
 tsh_loop_shutdown:
     pop ax
     call shutdown_apm
+    ; ?
+    jmp tsh_loop_ret
+
+tsh_loop_reboot:
+    pop ax
+    call reboot_apm
     ; ?
     jmp tsh_loop_ret
 
@@ -39,6 +51,11 @@ tsh_loop_unknown_command:
     call printf
     call print_nl
     jmp tsh_loop
+
+tsh_loop_start_prg:
+    pop ax
+    call call_program
+    jmp tsh_loop_ret
 
 read_string:
     mov dx, 64

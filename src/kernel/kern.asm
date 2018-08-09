@@ -52,30 +52,14 @@ kern_boot:
 
     call detect_hw
     
+    call init_user
+
     mov si, CONT_MSG
     call printf
     xor ax, ax
     int 0x16
     
-    ;mov ax, 0x0
-    ;mov es, ax
-    ;mov bx, 0x1000
-    ;mov ax, 3
-    ;mov cx, 1
-    ;call read_disk
 
-    ;lea ax, [ret_prg]
-    ;mov word [RET_ADDR], ax
-
-    ;lea ax, [0x1000]
-    ;jmp ax
-
-;ret_prg:
-    ;mov si, CONT_MSG
-    ;call printf
-
-    ;cli
-    ;hlt
     
     call tsh_start
 
@@ -88,7 +72,7 @@ kern_boot:
 %include "disk.asm"
 %include "hw.asm"
 %include "tsh.asm"
-
+%include "user.asm"
 
 BOOT_DRIVE: db 0
 RAM_S: dw 0
