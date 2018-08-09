@@ -7,7 +7,7 @@ jobs:
       - checkout
       - run:
           name: Installing Dependancies
-          command: sudo apt install yasm ld
+          command: apt-get update && apt-get install yasm binutils make
       - run:
           name: Making Alpha.bin
           command: make Alpha.bin
