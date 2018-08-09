@@ -1,5 +1,5 @@
 AS = yasm
-LD = i686-elf-ld
+LD = ld#i686-elf-ld
 
 #KERNEL_SRC = ${wildcard src/kernel/*.asm}
 #KERNEL_OBJ = ${KERNEL_SRC:.asm=.o}
@@ -19,10 +19,10 @@ boot1.bin:
 
 
 os.bin: ./src/kernel/kern.o#${KERNEL_OBJ}
-	${LD} -o $@ -Ttext 0x9000 $^ --oformat binary -e kern_main
+	${LD} -m elf_i386 -o $@ -Ttext 0x9000 $^ --oformat binary -e kern_main
 
 hll.bin: ./src/helloworld/main.o#${KERNEL_OBJ}
-	${LD} -o $@ -Ttext 0x1000 $^ --oformat binary -e start
+	${LD} -m elf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary -e start
 
 %.o: %.asm
 	${AS} $< -f elf -o $@ -p nasm
@@ -32,4 +32,5 @@ run: clean Alpha.bin
 
 clean:
 	rm -f ./src/kernel/*.o
+	rm -f ./src/helloworld/*.o
 	rm -f *.bin
