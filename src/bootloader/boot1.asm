@@ -28,7 +28,7 @@ boot:
     mov es, ax
     mov bx, 0x9000
     mov ah, 0x02
-    mov al, 2
+    mov al, 3
     mov ch, 0
     mov cl, 2
     mov dh, 0

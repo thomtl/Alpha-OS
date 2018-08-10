@@ -11,7 +11,7 @@ call_program:
     mov ax, 0x0
     mov es, ax
     mov bx, 0x1000
-    mov ax, 3
+    mov ax, 4
     mov cx, 1
     call read_disk
 

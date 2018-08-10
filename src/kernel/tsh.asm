@@ -7,25 +7,31 @@ tsh_start:
     call print_nl
 
     call tsh_loop
-
+    ret
 
 
 tsh_loop:
     mov al, '>'
     call putch
     call read_string
+    
     push ax
-    mov bx, ax
-    mov al, byte [bx]
 
-    cmp al, 'e'
+    mov si, ax
+    mov di, TSH_SHUTDOWN_CMD
+    call strcmp
+    cmp ax, 0
     je tsh_loop_shutdown
 
-    cmp al, 'r'
-    je tsh_loop_reboot
-
-    cmp al, 's'
+    mov di, TSH_START_CMD
+    call strcmp
+    cmp ax, 0
     je tsh_loop_start_prg
+
+    mov di, TSH_REBOOT_CMD
+    call strcmp
+    cmp ax, 0
+    je tsh_loop_reboot
 
     jmp tsh_loop_unknown_command
 tsh_loop_ret:
@@ -98,3 +104,6 @@ STR_BUF: times 65 db 0;
 
 TSH_WELCOME_MSG: db 'Welcome to TSH v0', 0x0
 TSH_UNRECONIZED_COMMAND: db 'Unreconized command: ', 0x0
+TSH_SHUTDOWN_CMD: db 'shutdown', 0x0
+TSH_START_CMD: db 'start', 0x0
+TSH_REBOOT_CMD: db 'reboot', 0x0

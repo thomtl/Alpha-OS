@@ -6,13 +6,16 @@ DEBUG equ 1
 
 kern_boot:
     cli
+
     xor ax, ax
+    xor bx, bx
+    xor cx, cx
+    xor dx, dx
+
     mov al, [BOOT_DRIVE_LOC]
     mov [BOOT_DRIVE], al
 
-
     call reset_disk
-
 
     ; Set 80x50 text mode
 	mov ax, 0x1112
@@ -34,7 +37,6 @@ kern_boot:
     call print_nl
 %endif
 
-
     xor ax, ax
     int 0x12
     inc ax
@@ -54,20 +56,21 @@ kern_boot:
     
     call init_user
 
+%if DEBUG == 1
     mov si, CONT_MSG
     call printf
     xor ax, ax
     int 0x16
-    
-
+%endif
     
     call tsh_start
 
-    
-
+    ; TSH returned shutdown the pc
+    call shutdown_apm
 
 
 %include "stdio.asm"
+%include "string.asm"
 %include "apm.asm"
 %include "disk.asm"
 %include "hw.asm"
